@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cobble-bot
+  labels:
+    app: cobble-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cobble-bot
+  template:
+    metadata:
+      name: cobble-bot
+      labels:
+        app: cobble-bot
+    spec:
+      containers:
+        - name: cobble-bot
+          image: ghcr.io/zgamelogic/cobble:master
+          imagePullPolicy: Always
+          env:
+            - name: TZ
+              value: "America/Chicago"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 15
+            periodSeconds: 5
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: ghcr-secret

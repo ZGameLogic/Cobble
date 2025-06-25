@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cobble-dev-ingress
+  namespace: dev
+spec:
+  rules:
+    - host: "cobble-dev.zgamelogic.com"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: cobble-bot-dev
+                port:
+                  number: 8080
+  tls:
+    - hosts:
+        - "cobble-dev.zgamelogic.com"
+      secretName: ingress-tls
