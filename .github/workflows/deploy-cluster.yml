@@ -40,16 +40,16 @@ jobs:
           push: true
           tags: ghcr.io/zgamelogic/cobble:master
           labels: ${{ steps.meta.outputs.labels }}
-#  disable-monitor:
-#    uses: zgamelogic/data-otter-monitor-active/.github/workflows/action.yml@v1.0.2
-#    needs: build
-#    with:
-#      applicationId: 2
-#      monitorId: 4
-#      active: false
+  disable-monitor:
+    uses: zgamelogic/data-otter-monitor-active/.github/workflows/action.yml@v1.0.2
+    needs: build
+    with:
+      applicationId: 3202
+      monitorId: 3252
+      active: false
   Kubernetes:
     runs-on: PiServer
-    needs: build
+    needs: disable-monitor
     steps:
       - name: Checkout Kubernetes Directory
         uses: actions/checkout@v4
@@ -61,11 +61,11 @@ jobs:
         run: |
           sudo kubectl rollout restart deployment cobble-bot
           sudo kubectl rollout status deployment cobble-bot --timeout=600s
-#  enable-monitor:
-#    uses: zgamelogic/data-otter-monitor-active/.github/workflows/action.yml@v1.0.2
-#    needs: [ build, disable-monitor, Kubernetes ]
-#    if: always()
-#    with:
-#      applicationId: 2
-#      monitorId: 4
-#      active: true
+  enable-monitor:
+    uses: zgamelogic/data-otter-monitor-active/.github/workflows/action.yml@v1.0.2
+    needs: [ build, disable-monitor, Kubernetes ]
+    if: always()
+    with:
+      applicationId: 3202
+      monitorId: 3252
+      active: true

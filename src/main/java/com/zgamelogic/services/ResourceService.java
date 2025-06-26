@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.ICommandReference;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class ResourceService {
     private final ResourcePatternResolver resourcePatternResolver;
 
     private final HashMap<String, CustomEmoji> emojis;
-    private final HashMap<String, Command.Subcommand> commands;
+    private final HashMap<String, ICommandReference> commands;
 
     public ResourceService(ResourcePatternResolver resourcePatternResolver) {
         this.resourcePatternResolver = resourcePatternResolver;
@@ -56,7 +56,17 @@ public class ResourceService {
     }
 
     private void mapCommands(JDA bot) {
-        // TODO map the slash commands
+        bot.retrieveCommands().complete().forEach(command -> {
+            command.getSubcommandGroups().forEach(group ->
+                group.getSubcommands().forEach(subcommand ->
+                    commands.put(subcommand.getFullCommandName(), subcommand)
+                )
+            );
+            command.getSubcommands().forEach(subcommand ->
+                commands.put(subcommand.getFullCommandName(), subcommand)
+            );
+            commands.put(command.getName(), command);
+        });
     }
 
     private void mapEmojis(JDA bot) throws IOException {
