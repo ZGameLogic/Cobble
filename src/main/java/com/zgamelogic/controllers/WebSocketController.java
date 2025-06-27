@@ -1,4 +1,4 @@
-package com.zgamelogic.services;
+package com.zgamelogic.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,14 +11,13 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
-public class WebSocketService extends TextWebSocketHandler {
+public class WebSocketController extends TextWebSocketHandler {
     private final Map<String, WebSocketSession> sessions;
     private final ObjectMapper mapper;
 
-    public WebSocketService() {
+    public WebSocketController() {
         super();
         sessions = new HashMap<>();
         mapper = new ObjectMapper();
