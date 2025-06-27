@@ -47,7 +47,7 @@ public class ResourceService {
         this.maleFirstNames = new LinkedList<>();
         this.femaleFirstNames = new LinkedList<>();
         this.lastNames = new LinkedList<>();
-        cobbleLogo = resourceLoader.getResource("classpath:assets/Cobble/cobble-logo.png");
+        cobbleLogo = resourceLoader.getResource("classpath:assets/cobble/cobble-logo.png");
         loadNames();
     }
 
