@@ -52,13 +52,13 @@ public class ResourceService {
     }
 
     private void loadNames() throws IOException {
-        Scanner in = new Scanner(resourceLoader.getResource("classpath:assets/Cobble/female_first_names.txt").getInputStream());
+        Scanner in = new Scanner(resourceLoader.getResource("classpath:assets/cobble/female_first_names.txt").getInputStream());
         while (in.hasNextLine()) femaleFirstNames.add(in.nextLine());
         in.close();
-        in = new Scanner(resourceLoader.getResource("classpath:assets/Cobble/male_first_names.txt").getInputStream());
+        in = new Scanner(resourceLoader.getResource("classpath:assets/cobble/male_first_names.txt").getInputStream());
         while (in.hasNextLine()) maleFirstNames.add(in.nextLine());
         in.close();
-        in = new Scanner(resourceLoader.getResource("classpath:assets/Cobble/last_names.txt").getInputStream());
+        in = new Scanner(resourceLoader.getResource("classpath:assets/cobble/last_names.txt").getInputStream());
         while (in.hasNextLine()) lastNames.add(in.nextLine());
         in.close();
     }
