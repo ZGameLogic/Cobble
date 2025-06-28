@@ -12,17 +12,18 @@ import com.zgamelogic.data.player.CobblePlayer;
 import com.zgamelogic.data.player.CobblePlayerRepository;
 import com.zgamelogic.data.production.CobbleProduction;
 import com.zgamelogic.data.production.CobbleProductionRepository;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.util.*;
 
 import static com.zgamelogic.data.enums.CobbleBuildingType.*;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class CobbleService {
     private final CobblePlayerRepository cobblePlayerRepository;
     private final CobbleHistoryRepository cobbleHistoryRepository;
@@ -32,27 +33,6 @@ public class CobbleService {
     private final ResourceService cobbleResourceService;
     private final CobbleBuildingRepository cobbleBuildingRepository;
 
-    private final File BASE_DIR;
-    private final File BATTLES_DIR;
-    private final File HISTORY_DIR;
-
-    public CobbleService(CobblePlayerRepository cobblePlayerRepository, CobbleHistoryRepository cobbleHistoryRepository, CobbleNpcRepository cobbleNpcRepository, CobbleProductionRepository cobbleProductionRepository, BadNameService badNameService, ResourceService cobbleResourceService, CobbleBuildingRepository cobbleBuildingRepository) {
-        this.cobblePlayerRepository = cobblePlayerRepository;
-        this.cobbleHistoryRepository = cobbleHistoryRepository;
-        this.cobbleNpcRepository = cobbleNpcRepository;
-        this.cobbleProductionRepository = cobbleProductionRepository;
-        this.badNameService = badNameService;
-        this.cobbleResourceService = cobbleResourceService;
-        this.cobbleBuildingRepository = cobbleBuildingRepository;
-        File file = new File("/cobble"); // check if we are in cluster
-        if (!file.exists()) file = new File("cobble"); // change to local
-        BASE_DIR = file;
-        BATTLES_DIR = new File(BASE_DIR, "battles");
-        HISTORY_DIR = new File(BASE_DIR, "history");
-        BATTLES_DIR.mkdirs();
-        HISTORY_DIR.mkdirs();
-    }
-
     @Scheduled(cron = "0 0 */12 * * *")
     public void day(){
         cobblePlayerRepository.findAll().forEach(this::resolvePlayerDay);
@@ -61,7 +41,7 @@ public class CobbleService {
 
     private void resolvePlayerDay(CobblePlayer player){
         // TODO resolve building
-        List<CobbleBuilding> unresolved = List.copyOf(player.getBuildings());
+        List<CobbleBuilding> unresolved = new ArrayList<>(player.getBuildings());
         for (int i = 0; i < player.getBuildings().size() && !unresolved.isEmpty(); i++) {
             for(CobbleBuilding building: unresolved.stream()
                 .sorted(Comparator.comparingInt(building -> building.getProduction().getConsumption().size())).toList()){

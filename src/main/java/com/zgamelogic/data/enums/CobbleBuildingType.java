@@ -17,7 +17,8 @@ public enum CobbleBuildingType {
     WHEAT_FARM("Wheat Farm", "Wheat Farmer", "wf"),
     FISHERY("Fishery", "Fisherman", "fs"),
     FORESTRY_HUT("Forestry Hut", "Forester", "fh"),
-    MINE("Mine", "Miner", "mn");
+    MINE("Mine", "Miner", "mn"),
+    HOME("Home", "", "hm");
 
     private final String friendlyName;
     private final String workerTitle;
