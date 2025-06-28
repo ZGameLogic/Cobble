@@ -151,14 +151,12 @@ public class CobbleListener {
     }
 
     @DiscordMapping(Id = "cobble-help-page-next")
-    private void cobbleHelpPageNext(ButtonInteractionEvent event){ helperService.cobbleHelpPage(event); }
     @DiscordMapping(Id = "cobble-help-page-prev")
-    private void cobbleHelpPagePrev(ButtonInteractionEvent event){ helperService.cobbleHelpPage(event); }
+    private void cobbleHelpPageNext(ButtonInteractionEvent event){ helperService.cobbleHelpPage(event); }
 
     @DiscordMapping(Id = "cobble-building-codex-page-next")
-    private void cobbleBuildingCodexPageNext(ButtonInteractionEvent event){ helperService.cobbleBuildingCodexPage(event); }
     @DiscordMapping(Id = "cobble-building-codex-page-prev")
-    private void cobbleBuildingCodexPagePrev(ButtonInteractionEvent event){ helperService.cobbleBuildingCodexPage(event); }
+    private void cobbleBuildingCodexPageNext(ButtonInteractionEvent event){ helperService.cobbleBuildingCodexPage(event); }
 
     @DiscordExceptionHandler(CobbleServiceException.class)
     private void catchException(
