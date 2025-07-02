@@ -166,10 +166,8 @@ public class CobbleListener {
     ){
         if(slashEvent != null) {
             slashEvent.reply(e.getMessage()).setEphemeral(true).queue();
-            return;
         } else if(autoCompleteEvent != null) {
             autoCompleteEvent.replyChoices(List.of()).queue();
-            return;
         }
     }
 
