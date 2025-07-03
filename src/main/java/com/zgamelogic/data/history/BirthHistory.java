@@ -5,6 +5,6 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "history_birth")
-public class CobbleBirthHistory extends CobbleHistory {
+public class BirthHistory extends History {
     private String name;
 }

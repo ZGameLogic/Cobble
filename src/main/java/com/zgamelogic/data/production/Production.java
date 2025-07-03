@@ -1,9 +1,9 @@
 package com.zgamelogic.data.production;
 
-import com.zgamelogic.data.CobbleBuildingConverter;
-import com.zgamelogic.data.CobbleResourceConverter;
-import com.zgamelogic.data.enums.CobbleBuildingType;
-import com.zgamelogic.data.enums.CobbleResourceType;
+import com.zgamelogic.data.BuildingConverter;
+import com.zgamelogic.data.ResourceConverter;
+import com.zgamelogic.data.enums.BuildingType;
+import com.zgamelogic.data.enums.ResourceType;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,23 +15,23 @@ import java.util.Map;
 @Getter
 @ToString
 @Table(name = "productions")
-public class CobbleProduction {
+public class Production {
     @EmbeddedId
     private CobbleProductionId id;
     private int workers;
 
     // The cost it takes to upgrade to this level from the previous
-    @Convert(converter = CobbleResourceConverter.class)
-    private Map<CobbleResourceType, Integer> cost;
+    @Convert(converter = ResourceConverter.class)
+    private Map<ResourceType, Integer> cost;
     // The amount of production per day this building produces
-    @Convert(converter = CobbleResourceConverter.class)
-    private Map<CobbleResourceType, Integer> production;
+    @Convert(converter = ResourceConverter.class)
+    private Map<ResourceType, Integer> production;
     // The amount of resources consumed per day for this building to produce
-    @Convert(converter = CobbleResourceConverter.class)
-    private Map<CobbleResourceType, Integer> consumption;
+    @Convert(converter = ResourceConverter.class)
+    private Map<ResourceType, Integer> consumption;
     // The buildings this level unlocks (not cumulative)
-    @Convert(converter = CobbleBuildingConverter.class)
-    private Map<CobbleBuildingType, Integer> unlocks;
+    @Convert(converter = BuildingConverter.class)
+    private Map<BuildingType, Integer> unlocks;
 
     @Getter
     @ToString
@@ -39,7 +39,7 @@ public class CobbleProduction {
     @EqualsAndHashCode
     public static class CobbleProductionId {
         @Enumerated(EnumType.STRING)
-        private CobbleBuildingType building;
+        private BuildingType building;
         private int level;
     }
 }

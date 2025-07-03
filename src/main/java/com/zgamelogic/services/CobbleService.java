@@ -1,17 +1,17 @@
 package com.zgamelogic.services;
 
 import com.zgamelogic.data.CobbleServiceException;
-import com.zgamelogic.data.building.CobbleBuilding;
-import com.zgamelogic.data.building.CobbleBuildingRepository;
-import com.zgamelogic.data.enums.CobbleBuildingType;
-import com.zgamelogic.data.enums.CobbleResourceType;
-import com.zgamelogic.data.history.CobbleHistoryRepository;
-import com.zgamelogic.data.npc.CobbleNpc;
-import com.zgamelogic.data.npc.CobbleNpcRepository;
-import com.zgamelogic.data.player.CobblePlayer;
-import com.zgamelogic.data.player.CobblePlayerRepository;
-import com.zgamelogic.data.production.CobbleProduction;
-import com.zgamelogic.data.production.CobbleProductionRepository;
+import com.zgamelogic.data.building.Building;
+import com.zgamelogic.data.building.BuildingRepository;
+import com.zgamelogic.data.enums.BuildingType;
+import com.zgamelogic.data.enums.ResourceType;
+import com.zgamelogic.data.history.HistoryRepository;
+import com.zgamelogic.data.npc.Npc;
+import com.zgamelogic.data.npc.NpcRepository;
+import com.zgamelogic.data.player.Player;
+import com.zgamelogic.data.player.PlayerRepository;
+import com.zgamelogic.data.production.Production;
+import com.zgamelogic.data.production.ProductionRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,31 +19,31 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static com.zgamelogic.data.enums.CobbleBuildingType.*;
+import static com.zgamelogic.data.enums.BuildingType.*;
 
 @Service
 @Slf4j
 @AllArgsConstructor
 public class CobbleService {
-    private final CobblePlayerRepository cobblePlayerRepository;
-    private final CobbleHistoryRepository cobbleHistoryRepository;
-    private final CobbleNpcRepository cobbleNpcRepository;
-    private final CobbleProductionRepository cobbleProductionRepository;
+    private final PlayerRepository playerRepository;
+    private final HistoryRepository historyRepository;
+    private final NpcRepository npcRepository;
+    private final ProductionRepository productionRepository;
     private final BadNameService badNameService;
     private final ResourceService cobbleResourceService;
-    private final CobbleBuildingRepository cobbleBuildingRepository;
+    private final BuildingRepository buildingRepository;
 
     @Scheduled(cron = "0 0 */12 * * *")
     public void day(){
-        cobblePlayerRepository.findAll().forEach(this::resolvePlayerDay);
+        playerRepository.findAll().forEach(this::resolvePlayerDay);
         // TODO post day message
     }
 
-    private void resolvePlayerDay(CobblePlayer player){
+    private void resolvePlayerDay(Player player){
         // TODO resolve building
-        List<CobbleBuilding> unresolved = new ArrayList<>(player.getBuildings());
+        List<Building> unresolved = new ArrayList<>(player.getBuildings());
         for (int i = 0; i < player.getBuildings().size() && !unresolved.isEmpty(); i++) {
-            for(CobbleBuilding building: unresolved.stream()
+            for(Building building: unresolved.stream()
                 .sorted(Comparator.comparingInt(building -> building.getProduction().getConsumption().size())).toList()){
                 if(player.canAfford(building.getProduction().getConsumption())){
                     player.removeResources(building.getProduction().getConsumption());
@@ -58,55 +58,55 @@ public class CobbleService {
 //        TODO births
     }
 
-    public CobblePlayer startCobblePlayer(long playerId, String name) throws CobbleServiceException {
-        if(cobblePlayerRepository.existsById(playerId)) throw new CobbleServiceException(("A cobble town already exists for this player"));
+    public Player startCobblePlayer(long playerId, String name) throws CobbleServiceException {
+        if(playerRepository.existsById(playerId)) throw new CobbleServiceException(("A cobble town already exists for this player"));
         if(badNameService.isNotOkay(name)) throw new CobbleServiceException(("Town name is not okay"));
-        CobblePlayer cobblePlayer = new CobblePlayer(playerId, name);
+        Player player = new Player(playerId, name);
         UUID buildingUUID = UUID.randomUUID();
-        cobblePlayer.addBuilding(TOWN_HALL, 1, "Town Hall", buildingUUID);
-        cobblePlayer.addNpc(generateRandomCobbleNpc(cobblePlayer));
-        cobblePlayer.addNpc(generateRandomCobbleNpc(cobblePlayer));
-        cobblePlayer.getNpcs().get(0).setCobbleBuilding(cobblePlayer.getBuildings().get(0));
-        cobblePlayer.addResource(CobbleResourceType.WOOD, 5);
-        return cobblePlayerRepository.save(cobblePlayer);
+        player.addBuilding(TOWN_HALL, 1, "Town Hall", buildingUUID);
+        player.addNpc(generateRandomCobbleNpc(player));
+        player.addNpc(generateRandomCobbleNpc(player));
+        player.getNpcs().get(0).setBuilding(player.getBuildings().get(0));
+        player.addResource(ResourceType.WOOD, 5);
+        return playerRepository.save(player);
     }
 
-    public List<CobbleNpc> getCobbleNpcs(long playerId) throws CobbleServiceException {
-        if(!cobblePlayerRepository.existsById(playerId)) throw new CobbleServiceException("You must start the game first with the " + cobbleResourceService.cm("cobble start")  + " slash command");
-        return cobbleNpcRepository.findAllByPlayer_PlayerId(playerId);
+    public List<Npc> getCobbleNpcs(long playerId) throws CobbleServiceException {
+        if(!playerRepository.existsById(playerId)) throw new CobbleServiceException("You must start the game first with the " + cobbleResourceService.cm("cobble start")  + " slash command");
+        return npcRepository.findAllByPlayer_PlayerId(playerId);
     }
 
     public List<String> getCobbleBuildingList(){
-        return Arrays.stream(values()).map(CobbleBuildingType::getFriendlyName).toList();
+        return Arrays.stream(values()).map(BuildingType::getFriendlyName).toList();
     }
 
-    public CobbleBuilding getCobbleBuilding(long uid, String buildingId) throws CobbleServiceException {
-        return cobbleBuildingRepository.findByPlayer_PlayerIdAndCobbleBuildingId(uid, UUID.fromString(buildingId))
+    public Building getCobbleBuilding(long uid, String buildingId) throws CobbleServiceException {
+        return buildingRepository.findByPlayer_PlayerIdAndBuildingId(uid, UUID.fromString(buildingId))
             .orElseThrow(() -> new CobbleServiceException(("No cobble building found")));
     }
 
-    public void renameBuilding(CobbleBuilding building, String newName) throws CobbleServiceException {
+    public void renameBuilding(Building building, String newName) throws CobbleServiceException {
         if(badNameService.isNotOkay(newName)) throw new CobbleServiceException(("Invalid building name"));
         building.setBuildingName(newName);
-        cobbleBuildingRepository.save(building);
+        buildingRepository.save(building);
     }
 
-    public CobblePlayer getCobblePlayer(long playerId) throws CobbleServiceException {
-        return cobblePlayerRepository.findById(playerId)
+    public Player getCobblePlayer(long playerId) throws CobbleServiceException {
+        return playerRepository.findById(playerId)
             .orElseThrow(() -> new CobbleServiceException(("No cobble player found. Have you started the game yet?")));
     }
 
-    public void renameTown(CobblePlayer player, String newName) throws CobbleServiceException {
+    public void renameTown(Player player, String newName) throws CobbleServiceException {
         if(badNameService.isNotOkay(newName)) throw new CobbleServiceException(("Invalid town name"));
         player.setTownName(newName);
-        cobblePlayerRepository.save(player);
+        playerRepository.save(player);
     }
 
-    public List<CobbleProduction> getCobbleProductions(CobbleBuildingType buildingType){
-        return cobbleProductionRepository.findAllById_Building(buildingType);
+    public List<Production> getCobbleProductions(BuildingType buildingType){
+        return productionRepository.findAllById_Building(buildingType);
     }
 
-    private CobbleNpc generateRandomCobbleNpc(CobblePlayer cobblePlayer) {
+    private Npc generateRandomCobbleNpc(Player player) {
         Random rand = new Random();
         boolean male = rand.nextBoolean();
         String name = cobbleResourceService.randomName(male);
@@ -118,6 +118,6 @@ public class CobbleService {
         appearance += male ? rand.nextInt(5) : 0; // facial hair
         appearance += rand.nextInt(10); // shirt color
         appearance += rand.nextInt(3); // pant color
-        return new CobbleNpc(cobblePlayer, name.split(" ")[0], name.split(" ")[1], appearance);
+        return new Npc(player, name.split(" ")[0], name.split(" ")[1], appearance);
     }
 }

@@ -1,6 +1,6 @@
 package com.zgamelogic.data.enums;
 
-public enum CobbleActionType {
+public enum ActionType {
     BUILD,
     UPGRADE,
     DESTROY

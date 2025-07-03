@@ -1,7 +1,7 @@
 package com.zgamelogic.data.history;
 
-import com.zgamelogic.data.enums.CobbleActionType;
-import com.zgamelogic.data.enums.CobbleBuildingType;
+import com.zgamelogic.data.enums.ActionType;
+import com.zgamelogic.data.enums.BuildingType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -11,11 +11,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "history_build")
-public class CobbleBuildHistory extends CobbleHistory {
+public class BuildHistory extends History {
     private int level;
     @Enumerated(EnumType.STRING)
-    private CobbleActionType action;
+    private ActionType action;
     @Enumerated(EnumType.STRING)
-    private CobbleBuildingType buildingType;
+    private BuildingType buildingType;
     private UUID buildingId;
 }

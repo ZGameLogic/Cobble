@@ -7,12 +7,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public interface CobbleHistoryRepository extends JpaRepository<CobbleHistory, UUID> {
-    default List<CobbleHistory> findAllByPlayer_PlayerIdAndCompletedBetween(long playerId, LocalDate day){
+public interface HistoryRepository extends JpaRepository<History, UUID> {
+    default List<History> findAllByPlayer_PlayerIdAndCompletedBetween(long playerId, LocalDate day){
         LocalDateTime start = day.atStartOfDay();
         LocalDateTime end = day.plusDays(1).atStartOfDay().minusNanos(1);
         return findAllByPlayer_PlayerIdAndCompletedBetween(playerId, start, end);
     }
 
-    List<CobbleHistory> findAllByPlayer_PlayerIdAndCompletedBetween(long playerPlayerId, LocalDateTime startDate, LocalDateTime endDate);
+    List<History> findAllByPlayer_PlayerIdAndCompletedBetween(long playerPlayerId, LocalDateTime startDate, LocalDateTime endDate);
 }

@@ -1,11 +1,11 @@
 package com.zgamelogic.controllers;
 
 import com.zgamelogic.data.CobbleServiceException;
-import com.zgamelogic.data.building.CobbleBuilding;
-import com.zgamelogic.data.building.CobbleBuildingRepository;
-import com.zgamelogic.data.enums.CobbleBuildingType;
-import com.zgamelogic.data.npc.CobbleNpc;
-import com.zgamelogic.data.player.CobblePlayer;
+import com.zgamelogic.data.building.Building;
+import com.zgamelogic.data.building.BuildingRepository;
+import com.zgamelogic.data.enums.BuildingType;
+import com.zgamelogic.data.npc.Npc;
+import com.zgamelogic.data.player.Player;
 import com.zgamelogic.discord.annotations.DiscordController;
 import com.zgamelogic.discord.annotations.DiscordExceptionHandler;
 import com.zgamelogic.discord.annotations.DiscordMapping;
@@ -36,7 +36,7 @@ public class CobbleListener {
     private final ResourceService resourceService;
     private final CobbleHelperService helperService;
     private final CobbleService cobbleService;
-    private final CobbleBuildingRepository cobbleBuildingRepository;
+    private final BuildingRepository buildingRepository;
 
     @DiscordMapping(Id = "help")
     private void cobbleHelp(SlashCommandInteractionEvent event) throws IOException {
@@ -51,7 +51,7 @@ public class CobbleListener {
     private void cobbleStart(SlashCommandInteractionEvent event, @EventProperty(name = "town-name") String townName) {
         try {
             if(townName == null || townName.isEmpty()) townName = event.getUser().getName() + "'s town";
-            CobblePlayer player = cobbleService.startCobblePlayer(event.getUser().getIdLong(), townName);
+            Player player = cobbleService.startCobblePlayer(event.getUser().getIdLong(), townName);
             event
                 .replyFiles(FileUpload.fromData(resourceService.mapAppearanceAsStream(player.getNpcs().get(0).getAppearance()), "npc.png"))
                 .addEmbeds(helperService.getStartMessage(player))
@@ -79,7 +79,7 @@ public class CobbleListener {
         CommandAutoCompleteInteractionEvent event,
         @EventProperty String citizen
     ) throws CobbleServiceException {
-        List<CobbleNpc> npcs = cobbleService.getCobbleNpcs(event.getUser().getIdLong());
+        List<Npc> npcs = cobbleService.getCobbleNpcs(event.getUser().getIdLong());
         event.replyChoices(npcs.stream()
             .filter(npc -> citizen.isEmpty() || npc.getFirstName().toLowerCase().contains(citizen.toLowerCase()) ||  npc.getLastName().toLowerCase().contains(citizen.toLowerCase()))
             .map(npc -> new Command.Choice(npc.getFirstName() + " " + npc.getLastName(), npc.getId().toString()))
@@ -92,7 +92,7 @@ public class CobbleListener {
         CommandAutoCompleteInteractionEvent event,
         @EventProperty String building
     ){
-        event.replyChoices(Arrays.stream(CobbleBuildingType.values())
+        event.replyChoices(Arrays.stream(BuildingType.values())
             .filter(type -> building.isEmpty() || type.getFriendlyName().toLowerCase().replaceAll("'", "").contains(building.toLowerCase()))
             .map(type -> new Command.Choice(type.getFriendlyName(), type.getFriendlyName()))
             .toList()
@@ -106,8 +106,8 @@ public class CobbleListener {
     ) throws CobbleServiceException {
         int page = 1;
         int maxPage = cobbleService.getCobbleBuildingList().size();
-        if(building != null && CobbleBuildingType.validName(building)) {
-            page = CobbleBuildingType.fromName(building).ordinal() + 1;
+        if(building != null && BuildingType.validName(building)) {
+            page = BuildingType.fromName(building).ordinal() + 1;
         }
         event.replyEmbeds(helperService.getBuildingMessage(page))
             .addActionRow(
@@ -122,9 +122,9 @@ public class CobbleListener {
         CommandAutoCompleteInteractionEvent event,
         @EventProperty String building
     ){
-        event.replyChoices(cobbleBuildingRepository.findAllByPlayer_PlayerId(event.getUser().getIdLong()).stream()
+        event.replyChoices(buildingRepository.findAllByPlayer_PlayerId(event.getUser().getIdLong()).stream()
             .filter(cb -> building == null || building.isEmpty() || cb.getBuildingName().toLowerCase().contains(building.toLowerCase()))
-            .map(cb -> new Command.Choice(cb.getBuildingName(), cb.getCobbleBuildingId().toString()))
+            .map(cb -> new Command.Choice(cb.getBuildingName(), cb.getBuildingId().toString()))
             .toList()
         ).queue();
     }
@@ -135,7 +135,7 @@ public class CobbleListener {
         @EventProperty String name,
         @EventProperty(name = "new-name") String newName
     ) throws CobbleServiceException {
-        CobbleBuilding building = cobbleService.getCobbleBuilding(event.getUser().getIdLong(), name);
+        Building building = cobbleService.getCobbleBuilding(event.getUser().getIdLong(), name);
         cobbleService.renameBuilding(building, newName);
         event.reply("Building successfully renamed to " + newName).setEphemeral(true).queue();
     }
@@ -145,7 +145,7 @@ public class CobbleListener {
         SlashCommandInteractionEvent event,
         @EventProperty(name = "new-name") String name
     ) throws CobbleServiceException {
-        CobblePlayer player = cobbleService.getCobblePlayer(event.getUser().getIdLong());
+        Player player = cobbleService.getCobblePlayer(event.getUser().getIdLong());
         cobbleService.renameTown(player, name);
         event.reply("Town successfully renamed to " + name).setEphemeral(true).queue();
     }

@@ -1,7 +1,7 @@
 package com.zgamelogic.data.npc;
 
-import com.zgamelogic.data.building.CobbleBuilding;
-import com.zgamelogic.data.player.CobblePlayer;
+import com.zgamelogic.data.building.Building;
+import com.zgamelogic.data.player.Player;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @Table(name = "npcs")
-public class CobbleNpc {
+public class Npc {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -27,14 +27,14 @@ public class CobbleNpc {
     private String appearance;
 
     @ManyToOne
-    @JoinColumn(name = "cobbleBuildingId", referencedColumnName = "cobbleBuildingId")
-    private CobbleBuilding cobbleBuilding;
+    @JoinColumn(name = "buildingId", referencedColumnName = "buildingId")
+    private Building building;
 
     @ManyToOne
     @JoinColumn(name = "playerId", referencedColumnName = "playerId", nullable = false)
-    private CobblePlayer player;
+    private Player player;
 
-    public CobbleNpc(CobblePlayer player, String firstname, String lastname, String appearance) {
+    public Npc(Player player, String firstname, String lastname, String appearance) {
         this.firstName = firstname;
         this.lastName = lastname;
         this.appearance = appearance;
@@ -47,6 +47,6 @@ public class CobbleNpc {
     }
 
     public void fire(){
-        cobbleBuilding = null;
+        building = null;
     }
 }

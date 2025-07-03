@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Getter
-public enum CobbleResourceType {
+public enum ResourceType {
     PRODUCTION("pd", "Production", false),
     WOOD("wd", "Wood", true),
     STONE("st", "Stone", true),
@@ -23,7 +23,7 @@ public enum CobbleResourceType {
     public final String friendlyName;
     public final boolean stockpile;
 
-    CobbleResourceType(String code, String friendlyName, boolean stockpile) {
+    ResourceType(String code, String friendlyName, boolean stockpile) {
         this.code = code;
         this.friendlyName = friendlyName;
         this.stockpile = stockpile;
@@ -33,11 +33,11 @@ public enum CobbleResourceType {
         return friendlyName.toLowerCase();
     }
 
-    public static CobbleResourceType fromCode(String code){
-        return Arrays.stream(CobbleResourceType.values()).filter(t -> t.code.equals(code)).findFirst().orElse(null);
+    public static ResourceType fromCode(String code){
+        return Arrays.stream(ResourceType.values()).filter(t -> t.code.equals(code)).findFirst().orElse(null);
     }
 
-    public static String mapResources(Map<CobbleResourceType, Integer> map){
+    public static String mapResources(Map<ResourceType, Integer> map){
         StringBuilder sb = new StringBuilder();
         map.forEach((key, value) -> {
             if (value == 0 || key.isStockpile()) return;
@@ -46,10 +46,10 @@ public enum CobbleResourceType {
         return sb.toString();
     }
 
-    public static Map<CobbleResourceType, Integer> mapResources(String resources, boolean includeZero){
-        Map<CobbleResourceType, Integer> map = new HashMap<>();
+    public static Map<ResourceType, Integer> mapResources(String resources, boolean includeZero){
+        Map<ResourceType, Integer> map = new HashMap<>();
         if(includeZero){
-            map = Arrays.stream(CobbleResourceType.values())
+            map = Arrays.stream(ResourceType.values())
                 .collect(Collectors.toMap(type -> type, type -> 0));
         }
         if(resources == null) return map;
@@ -60,7 +60,7 @@ public enum CobbleResourceType {
         while (matcher.find()) {
             String code = matcher.group(1);
             int number = Integer.parseInt(matcher.group(2));
-            CobbleResourceType type = CobbleResourceType.fromCode(code);
+            ResourceType type = ResourceType.fromCode(code);
             if(type == null) continue;
             map.put(type, number);
         }

@@ -1,6 +1,6 @@
 package com.zgamelogic.data.history;
 
-import com.zgamelogic.data.player.CobblePlayer;
+import com.zgamelogic.data.player.Player;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NoArgsConstructor
-public abstract class CobbleHistory {
+public abstract class History {
     @Id
     @GeneratedValue
     private UUID id;
@@ -20,5 +20,5 @@ public abstract class CobbleHistory {
 
     @ManyToOne
     @JoinColumn(name = "playerId", referencedColumnName = "playerId", nullable = false)
-    private CobblePlayer player;
+    private Player player;
 }

@@ -1,11 +1,11 @@
 package com.zgamelogic.services;
 
 import com.zgamelogic.data.CobbleServiceException;
-import com.zgamelogic.data.enums.CobbleBuildingType;
-import com.zgamelogic.data.npc.CobbleNpc;
-import com.zgamelogic.data.npc.CobbleNpcRepository;
-import com.zgamelogic.data.player.CobblePlayer;
-import com.zgamelogic.data.production.CobbleProduction;
+import com.zgamelogic.data.enums.BuildingType;
+import com.zgamelogic.data.npc.Npc;
+import com.zgamelogic.data.npc.NpcRepository;
+import com.zgamelogic.data.player.Player;
+import com.zgamelogic.data.production.Production;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -27,7 +27,7 @@ import java.util.UUID;
 public class CobbleHelperService {
     private final ResourceService ces;
     private final CobbleService cobbleService;
-    private final CobbleNpcRepository cobbleNpcRepository;
+    private final NpcRepository npcRepository;
 
     public final String PAGEABLE_PERMISSION = "You do not have permissions to change the page on this message.";
     public final String COBBLE_DESCRIPTION = """
@@ -83,7 +83,7 @@ public class CobbleHelperService {
     }
 
     public MessageEmbed getBuildingMessage(int page){
-        CobbleBuildingType type = CobbleBuildingType.values()[page - 1];
+        BuildingType type = BuildingType.values()[page - 1];
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(type.getFriendlyName());
         cobbleService.getCobbleProductions(type).stream()
@@ -93,7 +93,7 @@ public class CobbleHelperService {
         return eb.build();
     }
 
-    public MessageEmbed getStartMessage(CobblePlayer player) throws CobbleServiceException {
+    public MessageEmbed getStartMessage(Player player) throws CobbleServiceException {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(COBBLE_COLOR);
         eb.setTitle("Cobble Start");
@@ -102,14 +102,14 @@ public class CobbleHelperService {
         return eb.build();
     }
 
-    public MessageEmbed getCitizenMessage(CobbleNpc npc) {
+    public MessageEmbed getCitizenMessage(Npc npc) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(COBBLE_COLOR);
         eb.setTitle(npc.getFullName());
         String time = TimeFormat.DATE_TIME_LONG.now().toString();
         eb.setImage("attachment://npc.png");
         eb.addField("Born", time, true);
-        String occupation = npc.getCobbleBuilding() != null ? npc.getCobbleBuilding().getType().getWorkerTitle() : "Unemployed";
+        String occupation = npc.getBuilding() != null ? npc.getBuilding().getType().getWorkerTitle() : "Unemployed";
         eb.addField("Occupation", occupation, true);
         return eb.build();
     }
@@ -145,19 +145,19 @@ public class CobbleHelperService {
             ).queue();
     }
 
-    public String mentionableProduction(CobbleProduction production) {
+    public String mentionableProduction(Production production) {
         // TODO map production and consumption strings to correct resources
         return "";
     }
 
-    public String mentionableCost(CobbleProduction production) {
+    public String mentionableCost(Production production) {
         // TODO map cost string to correct resources
         return "";
     }
 
     public void cobbleCitizen(SlashCommandInteractionEvent event, String citizen) throws CobbleServiceException, IOException {
-        Optional<CobbleNpc> npcOptional = cobbleNpcRepository.findByPlayer_PlayerIdAndId(event.getUser().getIdLong(), UUID.fromString(citizen));
-        CobbleNpc npc = npcOptional.orElseThrow(() -> new CobbleServiceException("Unable to find npc"));
+        Optional<Npc> npcOptional = npcRepository.findByPlayer_PlayerIdAndId(event.getUser().getIdLong(), UUID.fromString(citizen));
+        Npc npc = npcOptional.orElseThrow(() -> new CobbleServiceException("Unable to find npc"));
         event
             .replyFiles(FileUpload.fromData(cobbleResourceService.mapAppearanceAsStream(npc.getAppearance()), "npc.png"))
             .addEmbeds(getCitizenMessage(npc))
