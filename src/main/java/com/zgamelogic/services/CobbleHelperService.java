@@ -22,6 +22,9 @@ import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.zgamelogic.data.Constants.BUILDING_CODEX_ID;
+import static com.zgamelogic.data.Constants.BUILDING_ID;
+
 @Service
 @RequiredArgsConstructor
 public class CobbleHelperService {
@@ -69,7 +72,7 @@ public class CobbleHelperService {
                 break;
             case 3:
                 eb.setTitle("Cobble Help - building");
-                eb.setDescription(String.format(BUILDING_DESCRIPTION, ces.cm("building codex")));
+                eb.setDescription(String.format(BUILDING_DESCRIPTION, ces.cm(BUILDING_ID + " " + BUILDING_CODEX_ID)));
                 break;
             case 1:
             default:
