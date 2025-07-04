@@ -72,7 +72,7 @@ public class CobbleHelperService {
                 break;
             case 3:
                 eb.setTitle("Cobble Help - building");
-                eb.setDescription(String.format(BUILDING_DESCRIPTION, ces.cm(BUILDING_ID + " " + BUILDING_CODEX_ID)));
+                eb.setDescription(String.format(BUILDING_DESCRIPTION, ces.cm(BUILDING_ID, BUILDING_CODEX_ID)));
                 break;
             case 1:
             default:

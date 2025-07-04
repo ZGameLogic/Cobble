@@ -77,8 +77,9 @@ public class ResourceService {
      * @param name name of the command
      * @return String mentionable of an command if it exists
      */
-    public String cm(String name){
-        return commands.containsKey(name) ? commands.get(name).getAsMention() : name;
+    public String cm(String...name){
+        String realName = String.join(" ", name);
+        return commands.containsKey(realName) ? commands.get(realName).getAsMention() : realName;
     }
 
     public BufferedImage mapAppearance(String appearance) throws IOException {
