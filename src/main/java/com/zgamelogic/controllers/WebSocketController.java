@@ -1,7 +1,7 @@
 package com.zgamelogic.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -23,33 +23,49 @@ public class WebSocketController extends TextWebSocketHandler {
         mapper = new ObjectMapper();
     }
 
-    public void sendMessage(long discordId, Object objectMessage){
+    public void sendMessageToSession(String sessionId, Object objectMessage) {
+        if(!sessions.containsKey(sessionId)) return;
         try {
             TextMessage message = new TextMessage(mapper.writeValueAsString(objectMessage));
-            sessions.values().stream().filter(session ->
-                Long.parseLong(session.getHandshakeHeaders().get("Discord-ID").get(0)) == discordId
-            ).forEach(session -> {
-                try {
-                    session.sendMessage(message);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        } catch (JsonProcessingException e) {
+            sessions.get(sessionId).sendMessage(message);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        super.afterConnectionEstablished(session);
-        sessions.put(session.getId(), session);
+    public void sendMessageToUser(long discordId, Object objectMessage){
+        sessions.values().stream().filter(session ->
+            (long) session.getAttributes().get("Discord-ID") == discordId
+        ).forEach(session -> sendMessageToSession(session.getId(), objectMessage));
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+    public void afterConnectionEstablished(@NotNull WebSocketSession session) throws Exception {
+        super.afterConnectionEstablished(session);
+        if(session.getHandshakeHeaders().containsKey("code")){
+            // TODO authenticate with code
+            // TODO set attribute Discord-ID (long) to discord id
+            sessions.put(session.getHandshakeHeaders().get("code").get(0), session);
+        } else if(session.getHandshakeHeaders().containsKey("token")){
+            // TODO authenticate with token
+            // TODO set attribute Discord-ID (long) to discord id
+            sessions.put(session.getHandshakeHeaders().get("token").get(0), session);
+        } else {
+            session.close(CloseStatus.NOT_ACCEPTABLE);
+            return;
+        }
+        // TODO update rolling token
+        // TODO send Rolling Token, User id, Avatar, Username
+    }
+
+    @Override
+    public void afterConnectionClosed(@NotNull WebSocketSession session, @NotNull CloseStatus status) throws Exception {
         super.afterConnectionClosed(session, status);
-        sessions.remove(session.getId());
+        if(session.getHandshakeHeaders().containsKey("code")){
+            sessions.remove(session.getHandshakeHeaders().get("code").get(0));
+        } else if(session.getHandshakeHeaders().containsKey("token")){
+            sessions.remove(session.getHandshakeHeaders().get("token").get(0));
+        }
     }
 
     @Override
