@@ -29,6 +29,8 @@ public class Building {
     private BuildingType type;
     @Setter
     private String buildingName;
+    @Setter
+    private Integer priority;
 
     @ManyToOne
     @JoinColumns({
@@ -51,7 +53,8 @@ public class Building {
         this.type = type;
         this.player = player;
         this.buildingId = buildingId;
-        buildTime= LocalDateTime.now();
+        buildTime = LocalDateTime.now();
+        priority = 10;
     }
 
     public int getResource(ResourceType type){ return production.getProduction().getOrDefault(type, 0); }
