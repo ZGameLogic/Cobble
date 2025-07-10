@@ -1,6 +1,8 @@
 package com.zgamelogic.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zgamelogic.data.authorization.WebsocketAuthData;
+import com.zgamelogic.services.AuthService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
@@ -16,9 +18,11 @@ import java.util.Map;
 public class WebSocketController extends TextWebSocketHandler {
     private final Map<String, WebSocketSession> sessions;
     private final ObjectMapper mapper;
+    private final AuthService authService;
 
-    public WebSocketController() {
+    public WebSocketController(AuthService authService) {
         super();
+        this.authService = authService;
         sessions = new HashMap<>();
         mapper = new ObjectMapper();
     }
@@ -43,13 +47,17 @@ public class WebSocketController extends TextWebSocketHandler {
     public void afterConnectionEstablished(@NotNull WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
         if(session.getHandshakeHeaders().containsKey("code")){
-            // TODO authenticate with code
-            // TODO set attribute Discord-ID (long) to discord id
-            sessions.put(session.getHandshakeHeaders().get("code").get(0), session);
+            String code =  session.getHandshakeHeaders().get("code").get(0);
+            WebsocketAuthData authData = authService.authorizeWithCode(code);
+            session.getAttributes().put("Discord-ID", authData.userId());
+            sessions.put(code, session);
+            sendMessageToSession(code, authData);
         } else if(session.getHandshakeHeaders().containsKey("token")){
-            // TODO authenticate with token
-            // TODO set attribute Discord-ID (long) to discord id
-            sessions.put(session.getHandshakeHeaders().get("token").get(0), session);
+            String token =  session.getHandshakeHeaders().get("token").get(0);
+            WebsocketAuthData authData = authService.authorizeWithRollingToken(token);
+            session.getAttributes().put("Discord-ID", authData.userId());
+            sessions.put(token, session);
+            sendMessageToSession(token, authData);
         } else {
             session.close(CloseStatus.NOT_ACCEPTABLE);
             return;

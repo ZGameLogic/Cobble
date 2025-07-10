@@ -12,12 +12,12 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "discord_auth")
 @AllArgsConstructor
 @NoArgsConstructor
 public class DiscordAuth {
     @Id
-    @Setter
     private String rollingToken;
     private LocalDateTime RollingTokenExpiration;
     private String discordToken;

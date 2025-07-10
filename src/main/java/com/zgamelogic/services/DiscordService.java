@@ -36,7 +36,6 @@ public class DiscordService {
         RestTemplate restTemplate = new RestTemplate();
         headers.add("Content-Type", "application/x-www-form-urlencoded");
         headers.add("Accept-Encoding", "application/x-www-form-urlencoded");
-
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("client_id", discordClientId);
         requestBody.add("client_secret", discordClientSecret);
@@ -52,7 +51,7 @@ public class DiscordService {
         }
     }
 
-    private DiscordToken refreshToken(String refreshToken){
+    public DiscordToken refreshToken(String refreshToken){
         String url = "https://discord.com/api/oauth2/token";
         HttpHeaders headers = new HttpHeaders();
         RestTemplate restTemplate = new RestTemplate();
