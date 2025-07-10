@@ -27,7 +27,7 @@ public class WebSocketController extends TextWebSocketHandler {
         mapper = new ObjectMapper();
     }
 
-    public void sendMessageToSession(String sessionId, Object objectMessage) {
+    private void sendMessageToSession(String sessionId, Object objectMessage) {
         if(!sessions.containsKey(sessionId)) return;
         try {
             TextMessage message = new TextMessage(mapper.writeValueAsString(objectMessage));
@@ -46,24 +46,27 @@ public class WebSocketController extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(@NotNull WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
-        if(session.getHandshakeHeaders().containsKey("code")){
-            String code =  session.getHandshakeHeaders().get("code").get(0);
-            WebsocketAuthData authData = authService.authorizeWithCode(code);
-            session.getAttributes().put("Discord-ID", authData.userId());
-            sessions.put(code, session);
-            sendMessageToSession(code, authData);
-        } else if(session.getHandshakeHeaders().containsKey("token")){
-            String token =  session.getHandshakeHeaders().get("token").get(0);
-            WebsocketAuthData authData = authService.authorizeWithRollingToken(token);
-            session.getAttributes().put("Discord-ID", authData.userId());
-            sessions.put(token, session);
-            sendMessageToSession(token, authData);
-        } else {
+        try {
+            if (session.getHandshakeHeaders().containsKey("code")) {
+                String code = session.getHandshakeHeaders().get("code").get(0);
+                WebsocketAuthData authData = authService.authorizeWithCode(code);
+                session.getAttributes().put("Discord-ID", authData.userId());
+                sessions.put(code, session);
+                sendMessageToSession(code, authData);
+            } else if (session.getHandshakeHeaders().containsKey("token")) {
+                String token = session.getHandshakeHeaders().get("token").get(0);
+                WebsocketAuthData authData = authService.authorizeWithRollingToken(token);
+                session.getAttributes().put("Discord-ID", authData.userId());
+                sessions.put(token, session);
+                sendMessageToSession(token, authData);
+            } else {
+                session.close(CloseStatus.NOT_ACCEPTABLE);
+                return;
+            }
+        } catch (Exception e) {
+            session.sendMessage(new TextMessage(e.getMessage()));
             session.close(CloseStatus.NOT_ACCEPTABLE);
-            return;
         }
-        // TODO update rolling token
-        // TODO send Rolling Token, User id, Avatar, Username
     }
 
     @Override

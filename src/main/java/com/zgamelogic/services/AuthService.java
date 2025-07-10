@@ -1,6 +1,7 @@
 package com.zgamelogic.services;
 
 import com.zgamelogic.data.authorization.*;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class AuthService {
         LocalDateTime rollingTokenExpire = LocalDateTime.now().plusDays(30);
         LocalDateTime discordTokenExpire = LocalDateTime.now().plusSeconds(discordToken.expires_in());
         DiscordAuth authentication = new DiscordAuth(
+            null,
             generateRollingToken(),
             rollingTokenExpire,
             discordToken.access_token(),
@@ -51,9 +53,8 @@ public class AuthService {
     }
 
     public WebsocketAuthData authorizeWithRollingToken(String token){
-        DiscordAuth authData = discordAuthRepository.findById(token).orElseThrow(() -> new RollingTokenNotFoundException("Token not found"));
+        DiscordAuth authData = discordAuthRepository.findByRollingToken(token).orElseThrow(() -> new RollingTokenNotFoundException("Token not found"));
         DiscordUser discordUser = discordService.getUserFromToken(authData.getDiscordToken());
-        discordAuthRepository.deleteById(authData.getRollingToken());
         LocalDateTime rollingTokenExpire = LocalDateTime.now().plusDays(30);
         authData.setRollingToken(generateRollingToken());
         authData.setRollingTokenExpiration(rollingTokenExpire);
@@ -76,6 +77,22 @@ public class AuthService {
 
     @Scheduled(cron = "0 0 * * * *")
     private void hourTasks(){
+        deleteExpiredRollingTokens();
+        refreshDiscordTokens();
+    }
+
+    @PostConstruct
+    public void postConstruct(){
+        hourTasks();
+    }
+
+    private void deleteExpiredRollingTokens(){
+        List<DiscordAuth> authData = discordAuthRepository.findAllByRollingTokenExpirationBefore(LocalDateTime.now());
+        authData.forEach(a -> discordService.revokeToken(a.getDiscordToken()));
+        discordAuthRepository.deleteAll(authData);
+    }
+
+    private void refreshDiscordTokens(){
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expiration = now.plusHours(1);
         List<DiscordAuth> updated = new ArrayList<>();
@@ -89,7 +106,7 @@ public class AuthService {
                 updated.add(authData);
             } catch (DiscordTokenRefreshException e) {
                 log.error("Unable to refresh token {}", authData.getDiscordRefreshToken());
-                discordAuthRepository.deleteById(authData.getRollingToken());
+                discordAuthRepository.delete(authData);
             }
         }
         discordAuthRepository.saveAll(updated);

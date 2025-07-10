@@ -7,10 +7,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
@@ -46,7 +46,6 @@ public class DiscordService {
             ResponseEntity<DiscordToken> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(requestBody, headers), DiscordToken.class);
             return response.getBody();
         } catch (Exception e){
-            log.error("Unable to post for token", e);
             throw new DiscordTokenFetchException("Unable to post for token");
         }
     }
@@ -67,8 +66,25 @@ public class DiscordService {
             ResponseEntity<DiscordToken> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(requestBody, headers), DiscordToken.class);
             return response.getBody();
         } catch (Exception e) {
-            log.error("Unable to refresh token", e);
             throw new DiscordTokenRefreshException("Unable to refresh token");
+        }
+    }
+
+    @Async
+    public void revokeToken(String token){
+        String url = "https://discord.com/api/oauth2/token/revoke";
+        HttpHeaders headers = new HttpHeaders();
+        RestTemplate restTemplate = new RestTemplate();
+        headers.add("Content-Type", "application/x-www-form-urlencoded");
+
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("client_id", discordClientId);
+        requestBody.add("client_secret", discordClientSecret);
+        requestBody.add("token", token);
+        try {
+            restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(requestBody, headers), Void.class);
+        } catch (Exception e) {
+            throw new DiscordTokenInvalidationException("Unable to invalidate token");
         }
     }
 
@@ -80,7 +96,7 @@ public class DiscordService {
         try {
             ResponseEntity<DiscordUser> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), DiscordUser.class);
             return response.getBody();
-        } catch(HttpClientErrorException.Unauthorized ignored) {
+        } catch(Exception ignored) {
             throw new DiscordUserIdentityException("Discord user token is not valid");
         }
     }
