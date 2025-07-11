@@ -1,5 +1,6 @@
 package com.zgamelogic.data.player;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zgamelogic.data.ResourceConverter;
 import com.zgamelogic.data.CobbleServiceException;
 import com.zgamelogic.data.action.Action;
@@ -55,6 +56,7 @@ public class Player {
         buildings.add(building);
     }
 
+    @JsonIgnore
     public Npc getMayor() throws CobbleServiceException {
         return npcs.stream()
             .filter(npc -> npc.getBuilding().getType() == BuildingType.TOWN_HALL)

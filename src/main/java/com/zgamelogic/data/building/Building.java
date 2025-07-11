@@ -1,5 +1,6 @@
 package com.zgamelogic.data.building;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zgamelogic.data.enums.BuildingType;
 import com.zgamelogic.data.enums.ResourceType;
 import com.zgamelogic.data.npc.Npc;
@@ -45,6 +46,7 @@ public class Building {
 
     @ManyToOne
     @JoinColumn(name = "playerId", referencedColumnName = "playerId", nullable = false)
+    @JsonIgnore
     private Player player;
 
     public Building(Player player, BuildingType type, int level, String name, UUID buildingId) {

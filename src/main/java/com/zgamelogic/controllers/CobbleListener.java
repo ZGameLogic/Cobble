@@ -10,7 +10,7 @@ import com.zgamelogic.discord.annotations.DiscordController;
 import com.zgamelogic.discord.annotations.DiscordExceptionHandler;
 import com.zgamelogic.discord.annotations.DiscordMapping;
 import com.zgamelogic.discord.annotations.EventProperty;
-import com.zgamelogic.services.CobbleHelperService;
+import com.zgamelogic.services.CobbleDiscordHelperService;
 import com.zgamelogic.services.CobbleService;
 import com.zgamelogic.services.ResourceService;
 import lombok.AllArgsConstructor;
@@ -36,7 +36,7 @@ import static com.zgamelogic.data.Constants.*;
 @AllArgsConstructor
 public class CobbleListener {
     private final ResourceService resourceService;
-    private final CobbleHelperService helperService;
+    private final CobbleDiscordHelperService helperService;
     private final CobbleService cobbleService;
     private final BuildingRepository buildingRepository;
 
