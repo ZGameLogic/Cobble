@@ -1,9 +1,8 @@
 package com.zgamelogic.controllers;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.zgamelogic.data.CobbleServiceException;
-import com.zgamelogic.data.View;
 import com.zgamelogic.data.player.Player;
+import com.zgamelogic.data.websocket.PlayerDTO;
 import com.zgamelogic.services.CobbleService;
 import com.zgamelogic.websocket.annotations.WebSocketAttribute;
 import com.zgamelogic.websocket.annotations.WebSocketController;
@@ -15,9 +14,9 @@ import lombok.AllArgsConstructor;
 public class CobbleWebSocket {
     private final CobbleService cobbleService;
 
-    @JsonView(View.InitialData.class)
     @WebSocketMapping(type = "INITIAL")
-    public Player initialData(@WebSocketAttribute("Discord-ID") long userId) throws CobbleServiceException {
-        return cobbleService.getCobblePlayer(userId);
+    private PlayerDTO initialData(@WebSocketAttribute("Discord-ID") long userId) throws CobbleServiceException {
+        Player player = cobbleService.getCobblePlayer(userId);
+        return new PlayerDTO(player);
     }
 }

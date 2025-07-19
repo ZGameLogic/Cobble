@@ -92,8 +92,9 @@ public class CobbleService {
     }
 
     public Player getCobblePlayer(long playerId) throws CobbleServiceException {
-        return playerRepository.findById(playerId)
+        Player player = playerRepository.findById(playerId)
             .orElseThrow(() -> new CobbleServiceException(("No cobble player found. Have you started the game yet?")));
+        return player;
     }
 
     public void renameTown(Player player, String newName) throws CobbleServiceException {
