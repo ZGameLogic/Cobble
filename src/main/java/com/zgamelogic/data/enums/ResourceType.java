@@ -15,6 +15,7 @@ public enum ResourceType {
     WOOD("wd", "Wood", true),
     STONE("st", "Stone", true),
     METAL("ml", "Metal", true),
+    ORE("or", "Ore", true),
     MAGIC("mc", "Magic", true),
     RATIONS("ra", "Rations", true),
     POPULATION("po", "Population", false);

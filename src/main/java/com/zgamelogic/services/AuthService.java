@@ -94,7 +94,7 @@ public class AuthService {
 
     private void refreshDiscordTokens(){
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expiration = now.plusHours(1);
+        LocalDateTime expiration = now.plusDays(1);
         List<DiscordAuth> updated = new ArrayList<>();
         for(DiscordAuth authData: discordAuthRepository.findByDiscordTokenExpirationBetween(now, expiration)) {
             try {
@@ -105,7 +105,7 @@ public class AuthService {
                 authData.setDiscordTokenExpiration(discordTokenExpire);
                 updated.add(authData);
             } catch (DiscordTokenRefreshException e) {
-                log.error("Unable to refresh token {}", authData.getDiscordRefreshToken());
+                log.error("Unable to refresh token {}", authData.getDiscordRefreshToken(), e);
                 discordAuthRepository.delete(authData);
             }
         }
