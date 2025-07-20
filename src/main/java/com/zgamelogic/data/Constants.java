@@ -2,6 +2,7 @@ package com.zgamelogic.data;
 
 public abstract class Constants {
     // Slash stuff
+    public static final String INITIAL = "initial";
     public static final String HELP_ID = "help";
     public static final String START_ID = "start";
     public static final String PRODUCTION_ID = "production";
@@ -24,5 +25,7 @@ public abstract class Constants {
     public static final String BUILDING_CODEX_NEXT = "cobble-building-codex-page-next";
     public static final String HELP_PREV = "cobble-help-page-prev";
     public static final String HELP_NEXT = "cobble-help-page-next";
+    // Web Socket attributes
+    public static final String DISCORD_ASPECT_ID = "discord-id";
 
 }

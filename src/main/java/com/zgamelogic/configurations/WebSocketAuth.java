@@ -13,6 +13,8 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 
+import static com.zgamelogic.data.Constants.DISCORD_ASPECT_ID;
+
 @Component
 @AllArgsConstructor
 public class WebSocketAuth implements WebSocketAuthorization {
@@ -25,12 +27,12 @@ public class WebSocketAuth implements WebSocketAuthorization {
         if (session.getHandshakeHeaders().containsKey("code")) {
             String code = session.getHandshakeHeaders().get("code").get(0);
             WebsocketAuthData authData = authService.authorizeWithCode(code);
-            session.getAttributes().put("Discord-ID", authData.userId());
+            session.getAttributes().put(DISCORD_ASPECT_ID, authData.userId());
             message = new WebSocketMessage("AUTHENTICATE", authData);
         } else if (session.getHandshakeHeaders().containsKey("token")) {
             String token = session.getHandshakeHeaders().get("token").get(0);
             WebsocketAuthData authData = authService.authorizeWithRollingToken(token);
-            session.getAttributes().put("Discord-ID", authData.userId());
+            session.getAttributes().put(DISCORD_ASPECT_ID, authData.userId());
             message = new WebSocketMessage("AUTHENTICATE", authData);
         } else {
             try {

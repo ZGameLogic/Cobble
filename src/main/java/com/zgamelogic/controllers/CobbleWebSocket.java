@@ -9,13 +9,15 @@ import com.zgamelogic.websocket.annotations.WebSocketController;
 import com.zgamelogic.websocket.annotations.WebSocketMapping;
 import lombok.AllArgsConstructor;
 
+import static com.zgamelogic.data.Constants.*;
+
 @AllArgsConstructor
 @WebSocketController
 public class CobbleWebSocket {
     private final CobbleService cobbleService;
 
-    @WebSocketMapping(type = "INITIAL")
-    private PlayerDTO initialData(@WebSocketAttribute("Discord-ID") long userId) throws CobbleServiceException {
+    @WebSocketMapping(type = INITIAL)
+    private PlayerDTO initialData(@WebSocketAttribute(DISCORD_ASPECT_ID) long userId) throws CobbleServiceException {
         Player player = cobbleService.getCobblePlayer(userId);
         return new PlayerDTO(player);
     }

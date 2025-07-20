@@ -34,7 +34,7 @@ import static com.zgamelogic.data.Constants.*;
 
 @DiscordController
 @AllArgsConstructor
-public class CobbleListener {
+public class CobbleDiscord {
     private final ResourceService resourceService;
     private final CobbleDiscordHelperService helperService;
     private final CobbleService cobbleService;
