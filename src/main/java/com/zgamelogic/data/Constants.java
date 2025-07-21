@@ -27,5 +27,6 @@ public abstract class Constants {
     public static final String HELP_NEXT = "cobble-help-page-next";
     // Web Socket attributes
     public static final String DISCORD_ASPECT_ID = "discord-id";
+    public static final String STATE_ASPECT_ID = "state";
 
 }
