@@ -42,6 +42,7 @@ public class CobbleDiscord {
 
     @DiscordMapping(Id = HELP_ID)
     private void cobbleHelp(SlashCommandInteractionEvent event) throws IOException {
+        System.out.println(event.getUser().getEffectiveAvatarUrl());
         event
             .replyFiles(FileUpload.fromData(resourceService.getCobbleLogo().getInputStream(), "cobble-logo.png"))
             .addEmbeds(helperService.getHelpMessage(1))

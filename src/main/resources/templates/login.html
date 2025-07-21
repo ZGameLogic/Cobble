@@ -26,7 +26,9 @@
     </head>
     <body>
         <div class="message">
-            Login Successful. You may now close this window.
+            <img th:src="'https://cdn.discordapp.com/avatars/' + ${id} + '/' + ${avatarId} + '.png'" alt="Success" style="width: 100px; height: 100px;">
+            <h1 th:text="'Welcome, ' + ${username} + '!'"></h1>
+            <p>You are logged into the Cobble app and may now close this tab.</p>
         </div>
     </body>
 </html>

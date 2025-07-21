@@ -8,6 +8,7 @@ import com.zgamelogic.websocket.components.WebSocketService;
 import com.zgamelogic.websocket.data.WebSocketMessage;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,7 +28,7 @@ public class CobbleController {
     private final ObjectMapper objectMapper;
 
     @GetMapping("/register")
-    public String register(@RequestParam String code, @RequestParam String state) throws CobbleServiceException {
+    public String register(@RequestParam String code, @RequestParam String state, Model model) throws CobbleServiceException {
         WebSocketSession session = webSocketService.getSessions().values().stream()
             .filter(s -> s.getAttributes().getOrDefault(STATE_ASPECT_ID, "").equals(state))
             .findFirst().orElseThrow(() -> new CobbleServiceException("Unable to find session with provided state. Please try again."));
@@ -41,7 +42,10 @@ public class CobbleController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return "redirect:/login.html";
+        model.addAttribute("username", authData.username());
+        model.addAttribute("id", authData.userId());
+        model.addAttribute("avatarId", authData.avatar());
+        return "login";
     }
 
     @ExceptionHandler(CobbleServiceException.class)
