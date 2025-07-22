@@ -27,7 +27,7 @@ import static com.zgamelogic.data.Constants.BUILDING_ID;
 
 @Service
 @RequiredArgsConstructor
-public class CobbleHelperService {
+public class CobbleDiscordHelperService {
     private final ResourceService ces;
     private final CobbleService cobbleService;
     private final NpcRepository npcRepository;

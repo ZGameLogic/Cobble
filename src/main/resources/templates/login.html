@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Login Successful</title>
+        <style>
+            body {
+                background-color: #181818;
+                color: #f1f1f1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                font-family: Arial, sans-serif;
+            }
+            .message {
+                font-size: 1.5rem;
+                text-align: center;
+                padding: 2rem;
+                background: #222;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="message">
+            <img th:src="'https://cdn.discordapp.com/avatars/' + ${id} + '/' + ${avatarId} + '.png'" alt="Success" style="width: 100px; height: 100px;">
+            <h1 th:text="'Welcome, ' + ${username} + '!'"></h1>
+            <p>You are logged into the Cobble app and may now close this tab.</p>
+        </div>
+    </body>
+</html>

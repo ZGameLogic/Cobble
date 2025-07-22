@@ -1,7 +1,10 @@
 package com.zgamelogic.data.player;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.zgamelogic.data.ResourceConverter;
 import com.zgamelogic.data.CobbleServiceException;
+import com.zgamelogic.data.View;
 import com.zgamelogic.data.action.Action;
 import com.zgamelogic.data.building.Building;
 import com.zgamelogic.data.enums.BuildingType;
@@ -27,6 +30,7 @@ public class Player {
     private long playerId;
     private LocalDateTime started;
     @Setter
+    @JsonView(View.InitialData.class)
     private String townName;
     @Convert(converter = ResourceConverter.class)
     private Map<ResourceType, Integer> resources;
@@ -55,6 +59,7 @@ public class Player {
         buildings.add(building);
     }
 
+    @JsonIgnore
     public Npc getMayor() throws CobbleServiceException {
         return npcs.stream()
             .filter(npc -> npc.getBuilding().getType() == BuildingType.TOWN_HALL)
@@ -81,6 +86,6 @@ public class Player {
         return true;
     }
 
-    public int populationCount(){ return npcs.size(); }
-    public int populationCapacity(){ return buildings.stream().mapToInt(b -> b.getResource(ResourceType.POPULATION)).sum(); }
+    public int getPopulationCount(){ return npcs.size(); }
+    public int getPopulationCapacity(){ return buildings.stream().mapToInt(b -> b.getResource(ResourceType.POPULATION)).sum(); }
 }

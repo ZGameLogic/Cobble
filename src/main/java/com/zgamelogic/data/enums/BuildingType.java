@@ -18,6 +18,7 @@ public enum BuildingType {
     FISHERY("Fishery", "Fisherman", "fs"),
     FORESTRY_HUT("Forestry Hut", "Forester", "fh"),
     MINE("Mine", "Miner", "mn"),
+    SMELTER("Smeltery", "Smelter", "sm"),
     HOME("Home", "", "hm");
 
     private final String friendlyName;

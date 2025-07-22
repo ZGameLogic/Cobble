@@ -1,5 +1,6 @@
 package com.zgamelogic.data.npc;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zgamelogic.data.building.Building;
 import com.zgamelogic.data.player.Player;
 import jakarta.persistence.*;
@@ -28,10 +29,12 @@ public class Npc {
 
     @ManyToOne
     @JoinColumn(name = "buildingId", referencedColumnName = "buildingId")
+    @JsonIgnore
     private Building building;
 
     @ManyToOne
     @JoinColumn(name = "playerId", referencedColumnName = "playerId", nullable = false)
+    @JsonIgnore
     private Player player;
 
     public Npc(Player player, String firstname, String lastname, String appearance) {

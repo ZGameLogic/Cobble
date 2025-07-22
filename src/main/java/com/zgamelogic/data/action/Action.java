@@ -1,5 +1,6 @@
 package com.zgamelogic.data.action;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zgamelogic.data.building.Building;
 import com.zgamelogic.data.enums.ActionType;
 import com.zgamelogic.data.player.Player;
@@ -28,5 +29,6 @@ public class Action {
 
     @ManyToOne
     @JoinColumn(name = "playerId", referencedColumnName = "playerId", nullable = false)
+    @JsonIgnore
     private Player player;
 }

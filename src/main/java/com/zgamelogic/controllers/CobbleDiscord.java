@@ -10,7 +10,7 @@ import com.zgamelogic.discord.annotations.DiscordController;
 import com.zgamelogic.discord.annotations.DiscordExceptionHandler;
 import com.zgamelogic.discord.annotations.DiscordMapping;
 import com.zgamelogic.discord.annotations.EventProperty;
-import com.zgamelogic.services.CobbleHelperService;
+import com.zgamelogic.services.CobbleDiscordHelperService;
 import com.zgamelogic.services.CobbleService;
 import com.zgamelogic.services.ResourceService;
 import lombok.AllArgsConstructor;
@@ -34,14 +34,15 @@ import static com.zgamelogic.data.Constants.*;
 
 @DiscordController
 @AllArgsConstructor
-public class CobbleListener {
+public class CobbleDiscord {
     private final ResourceService resourceService;
-    private final CobbleHelperService helperService;
+    private final CobbleDiscordHelperService helperService;
     private final CobbleService cobbleService;
     private final BuildingRepository buildingRepository;
 
     @DiscordMapping(Id = HELP_ID)
     private void cobbleHelp(SlashCommandInteractionEvent event) throws IOException {
+        System.out.println(event.getUser().getEffectiveAvatarUrl());
         event
             .replyFiles(FileUpload.fromData(resourceService.getCobbleLogo().getInputStream(), "cobble-logo.png"))
             .addEmbeds(helperService.getHelpMessage(1))
