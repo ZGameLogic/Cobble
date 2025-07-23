@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="EntryPointsManager">
-    <list size="3">
+    <list size="4">
       <item index="0" class="java.lang.String" itemvalue="com.zgamelogic.discord.annotations.DiscordExceptionHandler" />
       <item index="1" class="java.lang.String" itemvalue="com.zgamelogic.discord.annotations.DiscordMapping" />
-      <item index="2" class="java.lang.String" itemvalue="com.zgamelogic.websocket.annotations.WebSocketMapping" />
+      <item index="2" class="java.lang.String" itemvalue="com.zgamelogic.websocket.annotations.WebSocketExceptionHandler" />
+      <item index="3" class="java.lang.String" itemvalue="com.zgamelogic.websocket.annotations.WebSocketMapping" />
     </list>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
