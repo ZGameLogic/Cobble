@@ -59,7 +59,7 @@ public class CobbleService {
     }
 
     public Player startCobblePlayer(long playerId, String name) throws CobbleServiceException {
-        if(playerRepository.existsById(playerId)) throw new CobbleServiceException(("A cobble town already exists for this player"));
+        if(isPlayerStarted(playerId)) throw new CobbleServiceException(("A cobble town already exists for this player"));
         if(badNameService.isNotOkay(name)) throw new CobbleServiceException(("Town name is not okay"));
         Player player = new Player(playerId, name);
         UUID buildingUUID = UUID.randomUUID();
@@ -72,7 +72,7 @@ public class CobbleService {
     }
 
     public List<Npc> getCobbleNpcs(long playerId) throws CobbleServiceException {
-        if(!playerRepository.existsById(playerId)) throw new CobbleServiceException("You must start the game first with the " + cobbleResourceService.cm("cobble start")  + " slash command");
+        if(!isPlayerStarted(playerId)) throw new CobbleServiceException("You must start the game first with the " + cobbleResourceService.cm("cobble start")  + " slash command");
         return npcRepository.findAllByPlayer_PlayerId(playerId);
     }
 
@@ -105,6 +105,10 @@ public class CobbleService {
 
     public List<Production> getCobbleProductions(BuildingType buildingType){
         return productionRepository.findAllById_Building(buildingType);
+    }
+
+    public boolean isPlayerStarted(long playerId){
+        return playerRepository.existsById(playerId);
     }
 
     private Npc generateRandomCobbleNpc(Player player) {
