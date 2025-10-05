@@ -14,6 +14,8 @@ import com.zgamelogic.services.CobbleDiscordHelperService;
 import com.zgamelogic.services.CobbleService;
 import com.zgamelogic.services.ResourceService;
 import lombok.AllArgsConstructor;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -22,7 +24,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.FileUpload;
 import org.springframework.context.annotation.Bean;
 
@@ -46,7 +47,7 @@ public class CobbleDiscord {
         event
             .replyFiles(FileUpload.fromData(resourceService.getCobbleLogo().getInputStream(), "cobble-logo.png"))
             .addEmbeds(helperService.getHelpMessage(1))
-            .addActionRow(Button.secondary(HELP_PREV, "Previous page").asDisabled(), Button.secondary(HELP_NEXT, "Next Page"))
+            .addComponents(ActionRow.of(Button.secondary(HELP_PREV, "Previous page").asDisabled(), Button.secondary(HELP_NEXT, "Next Page")))
             .queue();
     }
 
@@ -113,10 +114,10 @@ public class CobbleDiscord {
             page = BuildingType.fromName(building).ordinal() + 1;
         }
         event.replyEmbeds(helperService.getBuildingMessage(page))
-            .addActionRow(
+            .addComponents(ActionRow.of(
                 Button.secondary(BUILDING_CODEX_PREV, "Previous page").withDisabled(page == 1),
                 Button.secondary(BUILDING_CODEX_NEXT, "Next Page").withDisabled(page == maxPage)
-            )
+            ))
             .queue();
     }
 

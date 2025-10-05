@@ -8,10 +8,11 @@ import com.zgamelogic.data.player.Player;
 import com.zgamelogic.data.production.Production;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import org.springframework.stereotype.Service;
@@ -123,13 +124,13 @@ public class CobbleDiscordHelperService {
             event.reply(PAGEABLE_PERMISSION).setEphemeral(true).queue();
             return;
         }
-        int it = event.getButton().getId().equals("cobble-help-page-next") ? 1 : -1;
+        int it = event.getButton().getCustomId().equals("cobble-help-page-next") ? 1 : -1;
         int newPage = Integer.parseInt(event.getMessage().getEmbeds().get(0).getFooter().getText().replace("Page ", "")) + it;
         event.editMessageEmbeds(getHelpMessage(newPage))
-            .setActionRow(
+            .setComponents(ActionRow.of(
                 Button.secondary("cobble-help-page-prev", "Previous page").withDisabled(newPage == 1),
                 Button.secondary("cobble-help-page-next", "Next Page").withDisabled(newPage == 3)
-            ).queue();
+            )).queue();
     }
 
     public void cobbleBuildingCodexPage(ButtonInteractionEvent event) {
@@ -139,13 +140,13 @@ public class CobbleDiscordHelperService {
             return;
         }
         int maxPage = cobbleService.getCobbleBuildingList().size();
-        int it = event.getButton().getId().equals("cobble-building-codex-page-next") ? 1 : -1;
+        int it = event.getButton().getCustomId().equals("cobble-building-codex-page-next") ? 1 : -1;
         int newPage = Integer.parseInt(event.getMessage().getEmbeds().get(0).getFooter().getText().replace("Page ", "")) + it;
         event.editMessageEmbeds(getBuildingMessage(newPage))
-            .setActionRow(
+            .setComponents(ActionRow.of(
                 Button.secondary("cobble-building-codex-page-prev", "Previous page").withDisabled(newPage == 1),
                 Button.secondary("cobble-building-codex-page-next", "Next Page").withDisabled(newPage == maxPage)
-            ).queue();
+            )).queue();
     }
 
     public String mentionableProduction(Production production) {
