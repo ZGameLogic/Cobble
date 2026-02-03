@@ -2,6 +2,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: cobble-ingress
+  labels:
+    route53: cobble
 spec:
   rules:
     - host: "cobble.zgamelogic.com"
