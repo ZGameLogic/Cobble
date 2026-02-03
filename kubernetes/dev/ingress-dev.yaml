@@ -3,12 +3,14 @@ kind: Ingress
 metadata:
   name: cobble-dev-ingress
   namespace: dev
+  labels:
+    route53: cobble-dev
 spec:
   rules:
     - host: "cobble-dev.zgamelogic.com"
       http:
         paths:
-          - path: /
+          - path: /api
             pathType: Prefix
             backend:
               service:
