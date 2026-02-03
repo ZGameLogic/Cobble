@@ -5,7 +5,28 @@ on:
     types: [published]
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      src: ${{ steps.filter.outputs.src }}
+      kubernetes: ${{ steps.filter.outputs.kubernetes }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            src:
+              - 'src/**'
+            kubernetes:
+              - 'kubernetes/**'
+
   build:
+    needs: changes
+    if: needs.changes.outputs.src == 'true'
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
@@ -41,13 +62,19 @@ jobs:
           push: true
           tags: ghcr.io/zgamelogic/cobble:master
           labels: ${{ steps.meta.outputs.labels }}
+
   disable-monitor:
     uses: zgamelogic/data-otter-monitor-active/.github/workflows/action.yml@v1.0.2
-    needs: build
+    needs: [changes, build]
+    if: |
+      always() &&
+      needs.changes.outputs.kubernetes == 'true' &&
+      (needs.build.result == 'success' || needs.build.result == 'skipped')
     with:
       applicationId: 3202
       monitorId: 3252
       active: false
+
   Kubernetes:
     runs-on: PiServer
     needs: disable-monitor
@@ -62,9 +89,10 @@ jobs:
         run: |
           sudo kubectl rollout restart deployment cobble-bot
           sudo kubectl rollout status deployment cobble-bot --timeout=600s
+
   enable-monitor:
     uses: zgamelogic/data-otter-monitor-active/.github/workflows/action.yml@v1.0.2
-    needs: [ build, disable-monitor, Kubernetes ]
+    needs: [build, disable-monitor, Kubernetes]
     if: always()
     with:
       applicationId: 3202
