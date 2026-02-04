@@ -10,28 +10,7 @@ on:
       - main
 
 jobs:
-  changes:
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
-    outputs:
-      src: ${{ steps.filter.outputs.src }}
-      kubernetes: ${{ steps.filter.outputs.kubernetes }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            src:
-              - 'src/**'
-            kubernetes:
-              - 'kubernetes/**'
-
   build:
-    needs: changes
-    if: needs.changes.outputs.src == 'true'
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
@@ -70,11 +49,7 @@ jobs:
 
   Kubernetes:
     runs-on: PiServer
-    needs: [changes, build]
-    if: |
-      always() &&
-      needs.changes.outputs.kubernetes == 'true' &&
-      (needs.build.result == 'success' || needs.build.result == 'skipped')
+    needs: build
     steps:
       - name: Checkout Kubernetes Directory
         uses: actions/checkout@v4
