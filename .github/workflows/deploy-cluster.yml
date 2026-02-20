@@ -45,8 +45,8 @@ jobs:
     uses: zgamelogic/data-otter-monitor-active/.github/workflows/action.yml@v1.0.2
     needs: build
     with:
-      applicationId: 3202
-      monitorId: 3252
+      applicationId: 4
+      monitorId: 4
       active: false
   Kubernetes:
     runs-on: PiServer
@@ -67,6 +67,6 @@ jobs:
     needs: [ build, disable-monitor, Kubernetes ]
     if: always()
     with:
-      applicationId: 3202
-      monitorId: 3252
+      applicationId: 4
+      monitorId: 4
       active: true
