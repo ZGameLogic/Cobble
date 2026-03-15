@@ -1,0 +1,23 @@
+name: Deploy Cobble Development
+
+on:
+  pull_request:
+    types:
+      - synchronize
+      - opened
+      - reopened
+    branches:
+      - main
+
+jobs:
+  deploy:
+    permissions:
+      contents: read
+      packages: write
+    uses: zgamelogic/github-actions/.github/workflows/kubernetes-deploy.yaml@0.0.1
+    with:
+      applicationId: 4
+      monitorIds: '4'
+      environment: development
+      deploymentName: cobble-bot
+      imageName: cobble

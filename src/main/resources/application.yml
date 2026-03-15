@@ -4,6 +4,8 @@ spring:
   config:
     import: configserver:http://192.168.1.15:30050
   cloud:
+    compatibility-verifier:
+      enabled: false
     config:
       fail-fast: true
       retry:

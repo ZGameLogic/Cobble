@@ -1,7 +1,7 @@
 package com.zgamelogic.services;
 
 import com.zgamelogic.discord.annotations.DiscordController;
-import com.zgamelogic.discord.annotations.DiscordMapping;
+import com.zgamelogic.discord.annotations.mappings.GenericDiscordMapping;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
@@ -161,8 +161,8 @@ public class ResourceService {
         return firstName + " " + lastName;
     }
 
-    @DiscordMapping
-    private void onReady(ReadyEvent event) throws IOException {
+    @GenericDiscordMapping(event = ReadyEvent.class)
+    public void onReady(ReadyEvent event) throws IOException {
         JDA bot = event.getJDA();
         mapEmojis(bot);
         mapCommands(bot);

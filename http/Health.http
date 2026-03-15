@@ -1,1 +1,1 @@
-GET {{base_url}}/health
+GET http://localhost:8080/api/actuator/health
