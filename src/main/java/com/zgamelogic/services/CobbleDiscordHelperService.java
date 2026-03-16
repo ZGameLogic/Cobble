@@ -15,7 +15,12 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.TimeFormat;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.awt.*;
 import java.io.IOException;
@@ -28,6 +33,7 @@ import static com.zgamelogic.data.Constants.BUILDING_ID;
 
 @Service
 @RequiredArgsConstructor
+@RestController
 public class CobbleDiscordHelperService {
     private final ResourceService ces;
     private final CobbleService cobbleService;
@@ -56,7 +62,14 @@ public class CobbleDiscordHelperService {
     private final Color COBBLE_COLOR = new Color(149, 145, 145);
     private final ResourceService cobbleResourceService;
 
+    @Bean
+    public CacheManager cobbleDiscordHelperCacheManager() {
+        return new ConcurrentMapCacheManager("cobbleHelpMessage");
+    }
+
+    @Cacheable(value = "cobbleHelpMessage", key = "#page")
     public MessageEmbed getHelpMessage(int page){
+        System.out.println("In the method");
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(COBBLE_COLOR);
         switch (page){

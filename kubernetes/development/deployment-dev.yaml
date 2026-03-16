@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cobble-bot-dev
-  namespace: dev
+  name: cobble-bot
+  namespace: development
   labels:
-    app: cobble-bot-dev
+    app: cobble-bot
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: cobble-bot-dev
+      app: cobble-bot
   template:
     metadata:
-      name: cobble-bot-dev
+      name: cobble-bot
       labels:
-        app: cobble-bot-dev
+        app: cobble-bot
     spec:
       containers:
-        - name: cobble-bot-dev
+        - name: cobble-bot
           image: ghcr.io/zgamelogic/cobble:development
           imagePullPolicy: Always
           env:
@@ -25,7 +25,7 @@ spec:
               value: "America/Chicago"
           readinessProbe:
             httpGet:
-              path: /api/health
+              path: /api/actuator/health
               port: 8080
               scheme: HTTP
             initialDelaySeconds: 15
