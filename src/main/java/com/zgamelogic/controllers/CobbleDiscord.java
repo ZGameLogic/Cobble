@@ -8,8 +8,9 @@ import com.zgamelogic.data.npc.Npc;
 import com.zgamelogic.data.player.Player;
 import com.zgamelogic.discord.annotations.DiscordController;
 import com.zgamelogic.discord.annotations.DiscordExceptionHandler;
-import com.zgamelogic.discord.annotations.DiscordMapping;
 import com.zgamelogic.discord.annotations.EventProperty;
+import com.zgamelogic.discord.annotations.mappings.SlashCommandAutocompleteMapping;
+import com.zgamelogic.discord.annotations.mappings.SlashCommandMapping;
 import com.zgamelogic.services.CobbleDiscordHelperService;
 import com.zgamelogic.services.CobbleService;
 import com.zgamelogic.services.ResourceService;
@@ -41,18 +42,18 @@ public class CobbleDiscord {
     private final CobbleService cobbleService;
     private final BuildingRepository buildingRepository;
 
-    @DiscordMapping(Id = HELP_ID)
-    private void cobbleHelp(SlashCommandInteractionEvent event) throws IOException {
-        System.out.println(event.getUser().getEffectiveAvatarUrl());
+    @SlashCommandMapping(id = HELP_ID)
+    public String cobbleHelp(SlashCommandInteractionEvent event) throws IOException {
         event
             .replyFiles(FileUpload.fromData(resourceService.getCobbleLogo().getInputStream(), "cobble-logo.png"))
             .addEmbeds(helperService.getHelpMessage(1))
             .addComponents(ActionRow.of(Button.secondary(HELP_PREV, "Previous page").asDisabled(), Button.secondary(HELP_NEXT, "Next Page")))
             .queue();
+        return "Ben I think we can do this";
     }
 
-    @DiscordMapping(Id = START_ID)
-    private void cobbleStart(SlashCommandInteractionEvent event, @EventProperty(name = START_OPTION_TOWN) String townName) {
+    @SlashCommandMapping(id = START_ID)
+    public void cobbleStart(SlashCommandInteractionEvent event, @EventProperty(name = START_OPTION_TOWN) String townName) {
         try {
             if(townName == null || townName.isEmpty()) townName = event.getUser().getName() + "'s town";
             Player player = cobbleService.startCobblePlayer(event.getUser().getIdLong(), townName);
@@ -65,8 +66,8 @@ public class CobbleDiscord {
         }
     }
 
-    @DiscordMapping(Id = CITIZENS_ID)
-    private void cobbleCitizens(
+    @SlashCommandMapping(id = CITIZENS_ID)
+    public void cobbleCitizens(
         SlashCommandInteractionEvent event,
         @EventProperty String citizen
     ) throws CobbleServiceException, IOException {
@@ -78,8 +79,8 @@ public class CobbleDiscord {
         }
     }
 
-    @DiscordMapping(Id = CITIZENS_ID, FocusedOption = CITIZENS_OPTION)
-    private void cobbleCitizensAutocomplete(
+    @SlashCommandAutocompleteMapping(id = CITIZENS_ID, focused = CITIZENS_OPTION)
+    public void cobbleCitizensAutocomplete(
         CommandAutoCompleteInteractionEvent event,
         @EventProperty String citizen
     ) throws CobbleServiceException {
@@ -91,8 +92,8 @@ public class CobbleDiscord {
         ).queue();
     }
 
-    @DiscordMapping(Id = BUILDING_ID, SubId = BUILDING_CODEX_ID, FocusedOption = BUILDING_OPTION)
-    private void cobbleBuildingCodexAutocomplete(
+    @SlashCommandAutocompleteMapping(id = BUILDING_ID, sub = BUILDING_CODEX_ID, focused = BUILDING_OPTION)
+    public void cobbleBuildingCodexAutocomplete(
         CommandAutoCompleteInteractionEvent event,
         @EventProperty String building
     ){
@@ -103,8 +104,8 @@ public class CobbleDiscord {
         ).queue();
     }
 
-    @DiscordMapping(Id = BUILDING_ID, SubId = BUILDING_CODEX_ID)
-    private void cobbleBuildingCodex(
+    @SlashCommandMapping(id = BUILDING_ID, sub = BUILDING_CODEX_ID)
+    public void cobbleBuildingCodex(
         SlashCommandInteractionEvent event,
         @EventProperty String building
     ) throws CobbleServiceException {
@@ -121,8 +122,8 @@ public class CobbleDiscord {
             .queue();
     }
 
-    @DiscordMapping(Id = BUILDING_ID, SubId = RENAME_ID, FocusedOption = RENAME_OPTION_NAME)
-    private void cobbleRenameBuildingAutocomplete(
+    @SlashCommandAutocompleteMapping(id = BUILDING_ID, sub = RENAME_ID, focused = RENAME_OPTION_NAME)
+    public void cobbleRenameBuildingAutocomplete(
         CommandAutoCompleteInteractionEvent event,
         @EventProperty String building
     ){
@@ -133,8 +134,8 @@ public class CobbleDiscord {
         ).queue();
     }
 
-    @DiscordMapping(Id = BUILDING_ID, SubId = RENAME_ID)
-    private void cobbleRenameBuildingSlashCommand(
+    @SlashCommandMapping(id = BUILDING_ID, sub = RENAME_ID)
+    public void cobbleRenameBuildingSlashCommand(
         SlashCommandInteractionEvent event,
         @EventProperty String name,
         @EventProperty(name = RENAME_OPTION_NEW_NAME) String newName
@@ -144,8 +145,8 @@ public class CobbleDiscord {
         event.reply("Building successfully renamed to " + newName).setEphemeral(true).queue();
     }
 
-    @DiscordMapping(Id = TOWN_ID, SubId = RENAME_ID)
-    private void cobbleRenameTownSlashCommand(
+    @SlashCommandMapping(id = TOWN_ID, sub = RENAME_ID)
+    public void cobbleRenameTownSlashCommand(
         SlashCommandInteractionEvent event,
         @EventProperty(name = RENAME_OPTION_NEW_NAME) String name
     ) throws CobbleServiceException {
@@ -154,16 +155,16 @@ public class CobbleDiscord {
         event.reply("Town successfully renamed to " + name).setEphemeral(true).queue();
     }
 
-    @DiscordMapping(Id = HELP_NEXT)
-    @DiscordMapping(Id = HELP_PREV)
-    private void cobbleHelpPageNext(ButtonInteractionEvent event){ helperService.cobbleHelpPage(event); }
+//    @DiscordMapping(Id = HELP_NEXT)
+//    @DiscordMapping(Id = HELP_PREV)
+    public void cobbleHelpPageNext(ButtonInteractionEvent event){ helperService.cobbleHelpPage(event); }
 
-    @DiscordMapping(Id = BUILDING_CODEX_NEXT)
-    @DiscordMapping(Id = BUILDING_CODEX_PREV)
-    private void cobbleBuildingCodexPageNext(ButtonInteractionEvent event){ helperService.cobbleBuildingCodexPage(event); }
+//    @DiscordMapping(Id = BUILDING_CODEX_NEXT)
+//    @DiscordMapping(Id = BUILDING_CODEX_PREV)
+    public void cobbleBuildingCodexPageNext(ButtonInteractionEvent event){ helperService.cobbleBuildingCodexPage(event); }
 
     @DiscordExceptionHandler(CobbleServiceException.class)
-    private void catchException(
+    public void catchException(
         CobbleServiceException e,
         SlashCommandInteractionEvent slashEvent,
         CommandAutoCompleteInteractionEvent autoCompleteEvent

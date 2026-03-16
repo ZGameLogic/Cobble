@@ -17,14 +17,14 @@ spec:
     spec:
       containers:
         - name: cobble-bot
-          image: ghcr.io/zgamelogic/cobble:master
+          image: ghcr.io/zgamelogic/cobble:production
           imagePullPolicy: Always
           env:
             - name: TZ
               value: "America/Chicago"
           readinessProbe:
             httpGet:
-              path: /api/health
+              path: /api/actuator/health
               port: 8080
               scheme: HTTP
             initialDelaySeconds: 15
