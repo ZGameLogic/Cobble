@@ -9,6 +9,7 @@ import com.zgamelogic.data.player.Player;
 import com.zgamelogic.discord.annotations.DiscordController;
 import com.zgamelogic.discord.annotations.DiscordExceptionHandler;
 import com.zgamelogic.discord.annotations.EventProperty;
+import com.zgamelogic.discord.annotations.mappings.ButtonMapping;
 import com.zgamelogic.discord.annotations.mappings.SlashCommandAutocompleteMapping;
 import com.zgamelogic.discord.annotations.mappings.SlashCommandMapping;
 import com.zgamelogic.services.CobbleDiscordHelperService;
@@ -43,13 +44,12 @@ public class CobbleDiscord {
     private final BuildingRepository buildingRepository;
 
     @SlashCommandMapping(id = HELP_ID)
-    public String cobbleHelp(SlashCommandInteractionEvent event) throws IOException {
+    public void cobbleHelp(SlashCommandInteractionEvent event) throws IOException {
         event
             .replyFiles(FileUpload.fromData(resourceService.getCobbleLogo().getInputStream(), "cobble-logo.png"))
             .addEmbeds(helperService.getHelpMessage(1))
             .addComponents(ActionRow.of(Button.secondary(HELP_PREV, "Previous page").asDisabled(), Button.secondary(HELP_NEXT, "Next Page")))
             .queue();
-        return "Ben I think we can do this";
     }
 
     @SlashCommandMapping(id = START_ID)
@@ -155,12 +155,13 @@ public class CobbleDiscord {
         event.reply("Town successfully renamed to " + name).setEphemeral(true).queue();
     }
 
-//    @DiscordMapping(Id = HELP_NEXT)
-//    @DiscordMapping(Id = HELP_PREV)
+    @ButtonMapping(condition = "#event.button.customId == 'cobble-help-page-next' || #event.button.customId == 'cobble-help-page-prev'")
     public void cobbleHelpPageNext(ButtonInteractionEvent event){ helperService.cobbleHelpPage(event); }
 
-//    @DiscordMapping(Id = BUILDING_CODEX_NEXT)
-//    @DiscordMapping(Id = BUILDING_CODEX_PREV)
+    @ButtonMapping(condition =
+        "#event.button.customId == '" + BUILDING_CODEX_NEXT + "' || " +
+        "#event.button.customId == '" + BUILDING_CODEX_PREV + "'"
+    )
     public void cobbleBuildingCodexPageNext(ButtonInteractionEvent event){ helperService.cobbleBuildingCodexPage(event); }
 
     @DiscordExceptionHandler(CobbleServiceException.class)

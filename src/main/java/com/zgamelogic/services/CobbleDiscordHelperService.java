@@ -6,7 +6,6 @@ import com.zgamelogic.data.npc.Npc;
 import com.zgamelogic.data.npc.NpcRepository;
 import com.zgamelogic.data.player.Player;
 import com.zgamelogic.data.production.Production;
-import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
@@ -19,6 +18,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,12 +32,13 @@ import static com.zgamelogic.data.Constants.BUILDING_CODEX_ID;
 import static com.zgamelogic.data.Constants.BUILDING_ID;
 
 @Service
-@RequiredArgsConstructor
 @RestController
 public class CobbleDiscordHelperService {
     private final ResourceService ces;
     private final CobbleService cobbleService;
     private final NpcRepository npcRepository;
+    private final CobbleDiscordHelperService selfProxy;
+    private final ResourceService cobbleResourceService;
 
     public final String PAGEABLE_PERMISSION = "You do not have permissions to change the page on this message.";
     public final String COBBLE_DESCRIPTION = """
@@ -60,7 +61,14 @@ public class CobbleDiscordHelperService {
         """;
 
     private final Color COBBLE_COLOR = new Color(149, 145, 145);
-    private final ResourceService cobbleResourceService;
+
+    public CobbleDiscordHelperService(ResourceService ces, CobbleService cobbleService, NpcRepository npcRepository, @Lazy CobbleDiscordHelperService selfProxy, ResourceService cobbleResourceService) {
+        this.ces = ces;
+        this.cobbleService = cobbleService;
+        this.npcRepository = npcRepository;
+        this.selfProxy = selfProxy;
+        this.cobbleResourceService = cobbleResourceService;
+    }
 
     @Bean
     public CacheManager cobbleDiscordHelperCacheManager() {
@@ -139,7 +147,7 @@ public class CobbleDiscordHelperService {
         }
         int it = event.getButton().getCustomId().equals("cobble-help-page-next") ? 1 : -1;
         int newPage = Integer.parseInt(event.getMessage().getEmbeds().get(0).getFooter().getText().replace("Page ", "")) + it;
-        event.editMessageEmbeds(getHelpMessage(newPage))
+        event.editMessageEmbeds(selfProxy.getHelpMessage(newPage))
             .setComponents(ActionRow.of(
                 Button.secondary("cobble-help-page-prev", "Previous page").withDisabled(newPage == 1),
                 Button.secondary("cobble-help-page-next", "Next Page").withDisabled(newPage == 3)
