@@ -49,7 +49,7 @@ public class CobbleController {
     }
 
     @ExceptionHandler(CobbleServiceException.class)
-    public String handleCobbleServiceException(CobbleServiceException e) {
+    public String handleCobbleServiceException(CobbleServiceException ignored) {
         return "redirect:/error.html";
     }
 }
