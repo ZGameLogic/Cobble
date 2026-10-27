@@ -30,7 +30,7 @@ public class CobbleService {
     private final NpcRepository npcRepository;
     private final ProductionRepository productionRepository;
     private final BadNameService badNameService;
-    private final ResourceService cobbleResourceService;
+    private final CobbleResourceService cobbleResourceService;
     private final BuildingRepository buildingRepository;
 
     @Scheduled(cron = "0 0 */12 * * *")

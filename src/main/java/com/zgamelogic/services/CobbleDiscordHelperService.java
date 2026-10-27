@@ -34,11 +34,11 @@ import static com.zgamelogic.data.Constants.BUILDING_ID;
 @Service
 @RestController
 public class CobbleDiscordHelperService {
-    private final ResourceService ces;
+    private final CobbleResourceService ces;
     private final CobbleService cobbleService;
     private final NpcRepository npcRepository;
     private final CobbleDiscordHelperService selfProxy;
-    private final ResourceService cobbleResourceService;
+    private final CobbleResourceService cobbleResourceService;
 
     public final String PAGEABLE_PERMISSION = "You do not have permissions to change the page on this message.";
     public final String COBBLE_DESCRIPTION = """
@@ -62,7 +62,7 @@ public class CobbleDiscordHelperService {
 
     private final Color COBBLE_COLOR = new Color(149, 145, 145);
 
-    public CobbleDiscordHelperService(ResourceService ces, CobbleService cobbleService, NpcRepository npcRepository, @Lazy CobbleDiscordHelperService selfProxy, ResourceService cobbleResourceService) {
+    public CobbleDiscordHelperService(CobbleResourceService ces, CobbleService cobbleService, NpcRepository npcRepository, @Lazy CobbleDiscordHelperService selfProxy, CobbleResourceService cobbleResourceService) {
         this.ces = ces;
         this.cobbleService = cobbleService;
         this.npcRepository = npcRepository;

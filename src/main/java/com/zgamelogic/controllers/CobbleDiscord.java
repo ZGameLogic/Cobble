@@ -14,7 +14,7 @@ import com.zgamelogic.discord.annotations.mappings.SlashCommandAutocompleteMappi
 import com.zgamelogic.discord.annotations.mappings.SlashCommandMapping;
 import com.zgamelogic.services.CobbleDiscordHelperService;
 import com.zgamelogic.services.CobbleService;
-import com.zgamelogic.services.ResourceService;
+import com.zgamelogic.services.CobbleResourceService;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
@@ -38,7 +38,7 @@ import static com.zgamelogic.data.Constants.*;
 @DiscordController
 @AllArgsConstructor
 public class CobbleDiscord {
-    private final ResourceService resourceService;
+    private final CobbleResourceService cobbleResourceService;
     private final CobbleDiscordHelperService helperService;
     private final CobbleService cobbleService;
     private final BuildingRepository buildingRepository;
@@ -46,7 +46,7 @@ public class CobbleDiscord {
     @SlashCommandMapping(id = HELP_ID)
     public void cobbleHelp(SlashCommandInteractionEvent event) throws IOException {
         event
-            .replyFiles(FileUpload.fromData(resourceService.getCobbleLogo().getInputStream(), "cobble-logo.png"))
+            .replyFiles(FileUpload.fromData(cobbleResourceService.getCobbleLogo().getInputStream(), "cobble-logo.png"))
             .addEmbeds(helperService.getHelpMessage(1))
             .addComponents(ActionRow.of(Button.secondary(HELP_PREV, "Previous page").asDisabled(), Button.secondary(HELP_NEXT, "Next Page")))
             .queue();
@@ -58,7 +58,7 @@ public class CobbleDiscord {
             if(townName == null || townName.isEmpty()) townName = event.getUser().getName() + "'s town";
             Player player = cobbleService.startCobblePlayer(event.getUser().getIdLong(), townName);
             event
-                .replyFiles(FileUpload.fromData(resourceService.mapAppearanceAsStream(player.getNpcs().get(0).getAppearance()), "npc.png"))
+                .replyFiles(FileUpload.fromData(cobbleResourceService.mapAppearanceAsStream(player.getNpcs().get(0).getAppearance()), "npc.png"))
                 .addEmbeds(helperService.getStartMessage(player))
                 .queue();
         } catch (CobbleServiceException | IOException e) {

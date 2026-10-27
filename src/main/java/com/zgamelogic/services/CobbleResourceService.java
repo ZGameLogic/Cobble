@@ -28,7 +28,7 @@ import java.util.List;
 @Slf4j
 @Service
 @DiscordController
-public class ResourceService {
+public class CobbleResourceService {
     private final ResourcePatternResolver resourcePatternResolver;
     private final ResourceLoader resourceLoader;
     private final HashMap<String, CustomEmoji> emojis;
@@ -39,7 +39,7 @@ public class ResourceService {
     @Getter
     private final Resource cobbleLogo;
 
-    public ResourceService(ResourcePatternResolver resourcePatternResolver, ResourceLoader resourceLoader) throws IOException {
+    public CobbleResourceService(ResourcePatternResolver resourcePatternResolver, ResourceLoader resourceLoader) throws IOException {
         this.resourcePatternResolver = resourcePatternResolver;
         this.resourceLoader = resourceLoader;
         emojis = new HashMap<>();
